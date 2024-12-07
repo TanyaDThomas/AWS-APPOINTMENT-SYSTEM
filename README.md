@@ -8,29 +8,88 @@ Appointment system set up in AWS from bookings scheduled on website.
 
 ## 2. Enable DynamoDB Stream
 
-Go to AWS Console → DynamoDB
-Select your appointments table
+Navigate to DynamoDB in the AWS Management Console:
+
+Open the AWS Console and search for DynamoDB.
+
+Choose your Appointments table from the list of tables.
+
 Click "Exports and streams"
-Under "DynamoDB stream details", click "Enable"
+
+Under "DynamoDB stream details", click "Turn On"
+
+![Screenshot 2024-12-02 133424](https://github.com/user-attachments/assets/2a5bea7a-c0f7-4d81-b08e-9cdce08ff34b)
+
 Choose "New and old images" for stream view type
+
+![Screenshot 2024-12-02 133514](https://github.com/user-attachments/assets/1c821343-b29e-44f6-98ac-ecdcb7df0c1c)
+
 Save changes
+
 
 ## 3. Create Lambda Function
 Go to AWS Console → Lambda
-Click "Create function"
-Choose "Author from scratch"
-Basic information:
-Function name: AppointmentNotificationHandler
-Runtime: Python 3.9
-Architecture: x86_64
+
 Click "Create function"
 
+Choose "Author from scratch"
+![Screenshot 2024-12-02 134946](https://github.com/user-attachments/assets/ae1f5e70-2b8a-4e30-a267-df9b7ce980d2)
+
+##### Basic information:
+
+Function name: Choose descriptive name
+
+Runtime: Python 3.9
+
+Architecture: x86_64
+
+Click "Create function"
+
+### Add a Trigger:
+
+Scroll down to the Triggers section and click Add trigger.
+
+From the list of available triggers, select DynamoDB.
+
+Choose the DynamoDB table you want to use.
+
+Choose your DynamoDB table and the stream you enabled.
+
+Click Add.
+
+## 4. Set Up Texts (SMS)
+
+Search for Amazon SNS in the AWS Management Console and open it.
+
+In the left-hand menu, select Topics.
+
+Click Create topic.
+
+Choose the topic type (e.g., Standard or FIFO, depending on your needs).
+
+![Screenshot 2024-12-02 132101](https://github.com/user-attachments/assets/a4de192e-f1b6-40d2-a82f-88557f03e24f)
+
+Enter a Name for your topic (e.g., MeetingNotifications).
+
+Click Create topic 
+
+Create a Subscription:
+
+You Will Need to Add the ARN to Your Lambda Function Later.
+
+
 ## 4. Set Up Email (SES)
-Go to AWS Console → SES
+
+Search for Amazon SES in the AWS Management Console and open it.
+
 Click "Verified identities"
+
 Click "Create identity"
+
 Choose "Email address"
+
 Enter your email
+
 Click verification link in your email
 
 ## 5. Lambda Function Setup - Initial Email Notifications
