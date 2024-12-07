@@ -1,5 +1,39 @@
 # AWS-APPOINTMENT-SYSTEM
-Appointment system set up in AWS from bookings scheduled on website.
+
+## Overview
+This system handles appointment scheduling and notifications using AWS services including DynamoDB, Lambda, SES, and SNS, with Twilio integration for voice calls.
+
+## Architecture
+[Include a simple architecture diagram showing the flow]
+
+## Prerequisites
+- AWS Account with appropriate permissions
+- Twilio Account (for voice calls)
+- Appointment saved in DynamoDB
+- Verified email in SES
+- Python 3.9
+
+  ## Versions
+- Last Updated: December 7, 2024
+- AWS SDK Version:  1.26.137
+- Python Version: 3.9
+
+## Table of Contents
+1. DynamoDB Setup
+2. Enable DynamoDB Stream
+3. Create Lambda Function
+4. Set Up IAM Role
+5. Attach Role to Lambda Function
+6. Set Up Email (SES)
+7. Lambda Function Setup
+8. Testing Email Notifications
+9. Update Lambda for Enhanced Email Templates
+10. Setting Up the Twilio Integration Environment
+11. Prepare for Twilio Integration
+12. Twilio Implementation (When Credentials Received)
+13. Testing Full Implementation
+14. Maintenance and Monitoring
+...
 
 # APPOINTMENT SYSTEM DOCUMENTATION
 
@@ -7,8 +41,6 @@ Appointment system set up in AWS from bookings scheduled on website.
 [Add existing documentation here]
 
 ## 2. Enable DynamoDB Stream
-
-Navigate to DynamoDB in the AWS Management Console:
 
 Open the AWS Console and search for DynamoDB.
 
@@ -28,14 +60,15 @@ Save changes
 
 
 ## 3. Create Lambda Function
-Go to AWS Console → Lambda
 
-Click "Create function"
+Search for Lambda in the AWS Console.
 
-Choose "Author from scratch"
+Click Create function
+
+Choose Author from scratch
 ![Screenshot 2024-12-02 134946](https://github.com/user-attachments/assets/ae1f5e70-2b8a-4e30-a267-df9b7ce980d2)
 
-##### Basic information:
+##### Add Basic Information:
 
 Function name: Choose descriptive name
 
@@ -43,56 +76,61 @@ Runtime: Python 3.9
 
 Architecture: x86_64
 
-Click "Create function"
+Click Create function
 
-### Add a Trigger:
+## 4. Set Up IAM Role
 
-Scroll down to the Triggers section and click Add trigger.
+Search for IAM in the AWS console.
 
-From the list of available triggers, select DynamoDB.
+Click on Roles and Create Role
 
-Choose the DynamoDB table you want to use.
+Choose AWS Service Lambd and then Next
 
-Choose your DynamoDB table and the stream you enabled.
+Search for these policies and check them
+- AWSLambdaBasicExecutionRole (allows logging to CloudWatch)
+- AWSLambdaBasicExecutionRole (allows access to DynamoDB)
 
-Click Add.
+Click Add
 
-## 4. Set Up Texts (SMS)
+Name Role (e.g., LambdaDynamoDBRole)
 
-Search for Amazon SNS in the AWS Management Console and open it.
+![Screenshot 2024-12-02 143232](https://github.com/user-attachments/assets/5148e4b0-5376-4f46-97ea-5cad5a3a1d56)
 
-In the left-hand menu, select Topics.
+Create Role
 
-Click Create topic.
+## 5. Attach Role to Lambda Function
 
-Choose the topic type (e.g., Standard or FIFO, depending on your needs).
+Go to Lambda console
 
-![Screenshot 2024-12-02 132101](https://github.com/user-attachments/assets/a4de192e-f1b6-40d2-a82f-88557f03e24f)
+Select Lambda function (e.g., AppointmentNotificationHandler)
 
-Enter a Name for your topic (e.g., MeetingNotifications).
+Click Permissions
 
-Click Create topic 
+In the configuration tabe, find Execution Role and click edit
 
-Create a Subscription:
+Select role just created (e.g., LambdaDynamoDBRole)
 
-You Will Need to Add the ARN to Your Lambda Function Later.
+Save
+![Screenshot 2024-12-02 142050](https://github.com/user-attachments/assets/54b9c28b-cbb4-480d-baf0-73d2f1f785bc)
 
-
-## 4. Set Up Email (SES)
+## 6. Set Up Email (SES)
 
 Search for Amazon SES in the AWS Management Console and open it.
 
-Click "Verified identities"
+Click Verified identities
 
-Click "Create identity"
+Click Create identity
 
-Choose "Email address"
+Choose "Email address" (or domain)
 
-Enter your email
+Enter your email (or domain)
 
 Click verification link in your email
 
-## 5. Lambda Function Setup - Initial Email Notifications
+You Will Need to Add this Verified Email to Your Lambda Function Later.
+
+## 7. Lambda Function Setup 
+
 ### A. Basic Lambda Configuration
 Go to Lambda function
 Click "Configuration" tab
@@ -105,18 +143,18 @@ Click "Edit" to modify if needed
 Click "Add trigger"
 Select "DynamoDB"
 Configure trigger:
-Choose your DynamoDB table
-Select your stream ARN
+Choose your DynamoDB table which should add your stream ARN
 Starting position: Latest
 Enable trigger: Checked
+Click Add
 
 ### C. Add IAM Permissions
 Go to Configuration → Permissions
 Click the role name (takes you to IAM)
 Add these policies:
-AmazonSESFullAccess
-AmazonSNSFullAccess
-AmazonEventBridgeFullAccess
+- AmazonSESFullAccess (for sending emails)
+- AmazonSNSFullAccess (for sending SMS)
+- AmazonEventBridgeFullAccess (for new appointments and reminders)
 
 ### D. Initial Code Setup (Email Only)
 In the Code tab, paste this basic version:
@@ -162,34 +200,50 @@ def lambda_handler(event, context):
     return {"statusCode": 200, "body": "Lambda executed successfully"}
 ```
 
-## 6. Testing Email Notifications
+### E. Configuring Lambda Environment Variables
+
+Go to the Lambda console and go back to the Appointment Notification Handler
+
+Add the following environment variables
+- In the send_email() section add your verified email (e.g., source="verifiedEmail@yahoo.com")
+- In the eventbridge_client.put_targets() section, add your Lambda ARN which can be found in top right of page (Targets=[{'Id': '1', 'Arn': 'arn:aws:lambda:us-east-1:123456789012:function:YourFunctionName'}])
+
+## 8. Testing Email Notifications
 
 ### A. Test Setup
+
 Create test appointment through your booking system
+
 Check DynamoDB to confirm data is saved
+
 Check CloudWatch logs:
+
 Go to Lambda → Monitor → Logs
-Click "View logs in CloudWatch"
-Look for most recent log stream
+
+Click View logs in CloudWatch above code
+
+Scroll to bottom and look for most recent log stream
 
 ### B. What to Check
+
 In CloudWatch logs:
-Verify "Event Received" message
-Check for any error messages
-Confirm "Email sent!" message
+- Verify "Event Received" message
+- Check for any error messages
+- Confirm "Email sent!" message
+- 
 In your email:
-Check for confirmation email
+- Check for confirmation email
 Verify all information is correct
 
 ### C. Troubleshooting
 If emails aren't received:
+-Check SES email verification
+-Verify Lambda execution role permissions
+-Check CloudWatch logs for specific errors
 
-Check SES email verification
-Verify Lambda execution role permissions
-Check CloudWatch logs for specific errors
+## 9. Update Lambda for Enhanced Email Templates
 
-## 7. Update Lambda for Enhanced Email Templates
-###A. Update Lambda Code with HTML Templates
+### A. Update Lambda Code with HTML Templates
 In Lambda, replace the basic email code with HTML version:
 
 ```python
@@ -212,10 +266,13 @@ def send_email(to_email, subject, body_html):
 ```
         
 Add HTML templates (as shown in previous code)
+
 Click "Deploy"
+
 Test with new appointment booking
 
-## 8. Prepare for Twilio Integration
+## 10. Setting Up the Twilio Integration Environment
+
 ## #A. Create Required Folders
 BASH
 
@@ -253,7 +310,8 @@ AGENT_PHONE
 AGENT_EMAIL
 Click "Save"
 
-## 8. Prepare for Twilio Integration
+## 11. Prepare for Twilio Integration
+
 ### A. Test Appointment Creation
 Create new appointment through booking system
 Check DynamoDB for new entry
@@ -274,7 +332,7 @@ Any error messages
 Email delivery times
 System behavior
 
-## 10. Twilio Implementation (When Credentials Received)
+## 12. Twilio Implementation (When Credentials Received)
 ### A. Update Environment Variables
 Go to Lambda → Configuration → Environment variables
 Click "Edit"
@@ -312,14 +370,14 @@ TWIML_URL_AGENT = [URL from step B3]
 TWIML_URL_USER = [URL from step B4]
 Update Lambda code with full implementation (the complete code we developed)
 
-### D. Testing Full Implementation
+## 13. Testing Full Implementation
 
-#### 1. Test Email Only First
+### 1. Test Email Only First
 Create test appointment
 Verify email received
 Check CloudWatch logs
 
-#### 2. Test Call Flow (Agent)
+### 2. Test Call Flow (Agent)
 Create test appointment
 Verify agent receives call
 Test all three scenarios:
@@ -327,13 +385,13 @@ Agent answers
 Agent doesn't answer
 Agent disconnects
 
-####3. Test Call Flow (User)
+### 3. Test Call Flow (User)
 Test when agent answers:
 User answers
 User doesn't answer
 User disconnects
 
-####4. Monitor in CloudWatch
+### 4. Monitor in CloudWatch
 Check logs for:
 
 
@@ -342,8 +400,9 @@ Check logs for:
 - "User call status: [status]"
 - Any error messages
 - 
-### E. Common Issues and Solutions
-#### 1. Call Not Initiating
+## E. Common Issues and Solutions
+
+### 1. Call Not Initiating
 Check:
 
 Twilio credentials
@@ -351,21 +410,19 @@ Phone number format
 Lambda timeout settings
 CloudWatch logs for errors
 
-#### 2. Call Connected but No Audio
+### 2. Call Connected but No Audio
 Check:
+-TwiML URLs
+-TwiML syntax
+-Twilio phone number permissions
 
-TwiML URLs
-TwiML syntax
-Twilio phone number permissions
-
-#### 3. Email Issues
+### 3. Email Issues
 Check:
+-SES verification
+-Email format
+-Spam folders
 
-SES verification
-Email format
-Spam folders
-
-## 11. Maintenance and Monitoring
+## 14. Maintenance and Monitoring
 
 ### A. Regular Checks
 Monitor CloudWatch logs daily
