@@ -3,8 +3,69 @@
 ## Overview
 This system handles appointment scheduling and notifications using AWS services including DynamoDB, Lambda, SES, and SNS, with Twilio integration for voice calls.
 
-## Architecture
-[Include a simple architecture diagram showing the flow]
+## Architecture - Tomorrow's AI Appointment System - Detailed Flow
+
+```mermaid
+  graph TD
+    subgraph Website
+        A[Booking Form] --> |Submit| B[Save Appointment]
+    end
+
+    subgraph AWS Services
+        B --> |Insert| C[(DynamoDB)]
+        C --> |Stream| D[DynamoDB Stream]
+        D --> |Trigger| E[Lambda Function]
+        
+        subgraph Lambda Processing
+            E --> |1. Immediate| F[Send Confirmation]
+            E --> |2. At Appointment Time| G[Initiate Calls]
+            
+            F --> |Use SES| H[Amazon SES]
+            G --> |Use Twilio| I[Twilio Service]
+        end
+    end
+
+    subgraph Communication Flow
+        H --> |Send| J[Confirmation Email]
+        
+        I --> |1. Call| K[Agent Phone]
+        K --> |If Answered| L[Call User]
+        L --> |If Connected| M[Join Call]
+        
+        subgraph Error Handling
+            K --> |No Answer| N[Retry x3]
+            L --> |No Answer| O[Retry x3]
+            N --> |Final Fail| P[Send Failure Email]
+            O --> |Final Fail| P
+        end
+    end
+
+    subgraph Monitoring
+        E --> |Logs| Q[CloudWatch]
+        Q --> |Alert| R[Error Notifications]
+        Q --> |Track| S[Call Metrics]
+    end
+
+     style A fill:#90CAF9,stroke:#000000,stroke-width:1px,color:black
+    style B fill:#90CAF9,stroke:#000000,stroke-width:1px,color:black
+    style C fill:#81C784,stroke:#000000,stroke-width:1px,color:black
+    style D fill:#81C784,stroke:#000000,stroke-width:1px,color:black
+    style E fill:#FFB74D,stroke:#000000,stroke-width:1px,color:black
+    style F fill:#FFB74D,stroke:#000000,stroke-width:1px,color:black
+    style G fill:#FFB74D,stroke:#000000,stroke-width:1px,color:black
+    style H fill:#9575CD,stroke:#000000,stroke-width:1px,color:black
+    style I fill:#F06292,stroke:#000000,stroke-width:1px,color:black
+    style J fill:#A1887F,stroke:#000000,stroke-width:1px,color:black
+    style K fill:#A1887F,stroke:#000000,stroke-width:1px,color:black
+    style L fill:#A1887F,stroke:#000000,stroke-width:1px,color:black
+    style M fill:#A1887F,stroke:#000000,stroke-width:1px,color:black
+    style N fill:#EF5350,stroke:#000000,stroke-width:1px,color:black
+    style O fill:#EF5350,stroke:#000000,stroke-width:1px,color:black
+    style P fill:#EF5350,stroke:#000000,stroke-width:1px,color:black
+    style Q fill:#7986CB,stroke:#000000,stroke-width:1px,color:black
+    style R fill:#7986CB,stroke:#000000,stroke-width:1px,color:black
+    style S fill:#7986CB,stroke:#000000,stroke-width:1px,color:black
+```
 
 ## Prerequisites
 - AWS Account with appropriate permissions
@@ -13,7 +74,7 @@ This system handles appointment scheduling and notifications using AWS services 
 - Verified email in SES
 - Python 3.9
 
-  ## Versions
+## Versions
 - Last Updated: December 7, 2024
 - AWS SDK Version:  1.26.137
 - Python Version: 3.9
