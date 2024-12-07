@@ -1,7 +1,33 @@
-# AWS-APPOINTMENT-SYSTEM
+# AWS AI-Powered Appointment Scheduling and Notification System
 
 ## Overview
-This system handles appointment scheduling and notifications using AWS services including DynamoDB, Lambda, SES, and SNS, with Twilio integration for voice calls.
+
+This application is an automated appointment booking and notification system designed for AI consultancy services. It integrates AWS services with Twilio to provide a seamless experience for both clients and consultants.
+
+### What the application does:
+- Allows clients to book appointments through a web interface
+- Stores appointment data in AWS DynamoDB
+- Sends confirmation emails using AWS SES
+- Automates phone call reminders using Twilio
+- Facilitates conference calls between clients and consultants
+
+### Technologies chosen:
+- AWS Lambda for serverless computing
+- AWS DynamoDB for scalable database storage
+- AWS SES for reliable email delivery
+- Twilio for phone call automation
+- Python as the primary programming language
+  
+These technologies were chosen for their scalability, reliability, and seamless integration capabilities, allowing for a robust and efficient system.
+
+### Main purpose and goals:
+- Streamline the appointment booking process for AI consultancy services
+- Reduce no-shows through automated reminders
+- Enhance client experience with timely notifications
+- Improve efficiency for consultants by automating administrative tasks
+- Provide a scalable solution that can handle growing demand
+  
+This system aims to modernize the appointment scheduling process, leveraging cloud technologies to create a more efficient and user-friendly experience for both clients and consultants in the AI consultancy field.
 
 ## Architecture - Tomorrow's AI Appointment System - Detailed Flow
 
@@ -101,12 +127,9 @@ This system handles appointment scheduling and notifications using AWS services 
 [Add existing documentation here]
 
 ## 2. Enable DynamoDB Stream
-
-Open the AWS Console and search for DynamoDB.
-
-Choose your Appointments table from the list of tables.
-
-Click "Exports and streams"
+  Open the AWS Console and search for DynamoDB.
+  Choose your Appointments table from the list of tables.
+  Click "Exports and streams"
 
 Under "DynamoDB stream details", click "Turn On"
 
