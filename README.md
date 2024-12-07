@@ -93,7 +93,6 @@ This system handles appointment scheduling and notifications using AWS services 
 11. Prepare for Twilio Integration
 12. Twilio Implementation (When Credentials Received)
 13. Testing Full Implementation
-14. Maintenance and Monitoring
 ...
 
 # APPOINTMENT SYSTEM DOCUMENTATION
@@ -291,7 +290,7 @@ In CloudWatch logs:
 - Verify "Event Received" message
 - Check for any error messages
 - Confirm "Email sent!" message
-- 
+  
 In your email:
 - Check for confirmation email
 Verify all information is correct
@@ -328,7 +327,7 @@ def send_email(to_email, subject, body_html):
         
 Add HTML templates (as shown in previous code)
 
-Click "Deploy"
+Click Deploy
 
 Test with new appointment booking
 
@@ -337,66 +336,75 @@ Test with new appointment booking
 ## #A. Create Required Folders
 BASH
 
+```bash
 mkdir twilio-layer
 cd twilio-layer
 mkdir python
 pip install twilio -t python
-Zip the python folder
+zip -r twilio-layer.zip python/
+```
+# Zip the python folder (ensure you are inside twilio-layer folder)
 
 ### B. Create Lambda Layer
-Go to Lambda → Layers
-Click "Create layer"
-Name: twilio-layer
-Upload zip file
-Choose Python 3.9
-Click "Create"
+
+Go to Lambda Function → Layers
+Click Create layer
+  Name: twilio-layer
+  Upload zip file (e.g., twilio-layer.zip)
+  Choose Python 3.9
+Click Create
 
 ### C. Add Layer to Function
 Go to your Lambda function
-Click "Layers"
-Click "Add a layer"
-Choose "Custom layers"
-Select twilio-layer
-Click "Add"
+  Click Layers
+  Click Add a layer
+  Choose Custom layers
+  Select twilio-layer
+Click Add
 
 ### D. Add Environment Variables (Placeholder)
 Go to Configuration → Environment variables
-Click "Edit"
-Add variables (leave values blank for now):
+Click Edit
+- Add variables (waiting on credentials):
 
-TWILIO_ACCOUNT_SID
-TWILIO_AUTH_TOKEN
-TWILIO_PHONE_NUMBER
-AGENT_PHONE
-AGENT_EMAIL
-Click "Save"
+-- TWILIO_ACCOUNT_SID
+-- TWILIO_AUTH_TOKEN
+-- TWILIO_PHONE_NUMBER
+-- AGENT_PHONE
+-- AGENT_EMAIL
+
+Click Save
 
 ## 11. Prepare for Twilio Integration
 
 ### A. Test Appointment Creation
-Create new appointment through booking system
-Check DynamoDB for new entry
-Verify HTML email received
-Check CloudWatch logs
+
+- Create new appointment through booking system
+- Check DynamoDB for new entry
+- Verify HTML email received
+- Check CloudWatch logs to see a new stream
 
 ### B. Verify Environment
+
 Check Lambda configuration:
-Memory and timeout settings
-IAM roles and permissions
-Environment variables
-Layer attachment
+- Memory and timeout settings
+- IAM roles and permissions
+- Environment variables
+- Layer attachment
 
 ### C. Document Any Issues
-Keep track of:
 
-Any error messages
-Email delivery times
-System behavior
+Keep track of:
+- Any error messages
+- Email delivery times
+- System behavior
 
 ## 12. Twilio Implementation (When Credentials Received)
+
 ### A. Update Environment Variables
-Go to Lambda → Configuration → Environment variables
-Click "Edit"
+
+Go to Lambda Function → Configuration → Environment variables
+Click Edit
 Add Twilio credentials:
 
 TWILIO_ACCOUNT_SID = [from boss]
@@ -408,9 +416,9 @@ AGENT_EMAIL = [consultant's email]
 ### B. Create TwiML Bins in Twilio
 Log into Twilio console
 Go to Runtime → TwiML Bins
-Create Agent Greeting:
-XML
 
+#### Create Agent Greeting:
+```XML
 <Response>
     <Say>Hello consultant. You have a scheduled appointment with {client_name}. 
     They will be connected shortly. Please stay on the line.</Say>
@@ -423,76 +431,92 @@ XML
     <Say>Hello {client_name}, thank you for choosing Tomorrow's AI. 
     Your consultant is ready to speak with you.</Say>
 </Response>
+```
+
 Save both and copy URLs
 
 ### C. Update Lambda Function
+
 Add TwiML URLs to environment variables:
+
 TWIML_URL_AGENT = [URL from step B3]
 TWIML_URL_USER = [URL from step B4]
+
 Update Lambda code with full implementation (the complete code we developed)
 
 ## 13. Testing Full Implementation
 
 ### 1. Test Email Only First
-Create test appointment
-Verify email received
-Check CloudWatch logs
+- Create test appointment
+- Verify email received
+- Check CloudWatch logs
 
 ### 2. Test Call Flow (Agent)
+
 Create test appointment
+
 Verify agent receives call
+
 Test all three scenarios:
-Agent answers
-Agent doesn't answer
-Agent disconnects
+- Agent answers
+- Agent doesn't answer
+- Agent disconnects
 
 ### 3. Test Call Flow (User)
+
 Test when agent answers:
-User answers
-User doesn't answer
-User disconnects
+- User answers
+- User doesn't answer
+- User disconnects
 
 ### 4. Monitor in CloudWatch
-Check logs for:
 
+Check logs for:
 
 - "Starting appointment calls for [name]"
 - "Agent call status: [status]"
 - "User call status: [status]"
 - Any error messages
-- 
+ 
 ## E. Common Issues and Solutions
 
 ### 1. Call Not Initiating
+
 Check:
 
-Twilio credentials
-Phone number format
-Lambda timeout settings
-CloudWatch logs for errors
+- Twilio credentials
+- Phone number format
+- Lambda timeout settings
+- CloudWatch logs for errors
 
 ### 2. Call Connected but No Audio
+
 Check:
--TwiML URLs
--TwiML syntax
--Twilio phone number permissions
+
+- TwiML URLs
+- TwiML syntax
+- Twilio phone number permissions
 
 ### 3. Email Issues
+
 Check:
--SES verification
--Email format
--Spam folders
+
+- SES verification
+- Email format
+- Spam folders
 
 ## 14. Maintenance and Monitoring
 
 ### A. Regular Checks
-Monitor CloudWatch logs daily
-Check failed connection patterns
-Verify email deliverability
-Test call quality
+
+- Monitor CloudWatch logs daily
+- Check failed connection patterns
+- Verify email deliverability
+- Test call quality
 
 ### B. Updates Needed
-Update TwiML messages
-Modify email templates
-Adjust retry attempts/timing
-Update phone numbers
+
+- Update TwiML messages
+- Modify email templates
+- Adjust retry attempts/timing
+- Update phone numbers
