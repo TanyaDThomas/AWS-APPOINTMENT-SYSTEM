@@ -427,15 +427,22 @@ Keep track of:
 ### A. Update Environment Variables
 
 Go to Lambda Function → Configuration → Environment variables
-![Screenshot 2024-12-08 124845](https://github.com/user-attachments/assets/d89019d5-ae52-483c-8ab3-eaaae7259f3e)
+![Screenshot 2024-12-08 124845](https://github.com/user-attachments/assets/d89019d5-ae52-483c-8ab3-eaaae7259f3e width="300" height="200" )
 Click Edit
 Click "Add environment variable" for each of these:
 
+![Screenshot 2024-12-08 131620](https://github.com/user-attachments/assets/e9c1ee93-b811-4274-a39b-3bb91afaa140)
+
+
 TWILIO_ACCOUNT_SID = [twilio number]
+
 TWILIO_AUTH_TOKEN = [twilio token]
-TWILIO_PHONE_NUMBER = [twilio phone number]
+
+TWILIO_PHONE = [twilio phone number]
+
 AGENT_PHONE = [consultant's number]
-AGENT_EMAIL = [consultant's email]
+
+AGENT_EMAIL_ADDRESS = [consultant's email]
 
 ### B. Create TwiML Bins in Twilio
 Log into Twilio console
