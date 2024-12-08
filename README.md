@@ -427,12 +427,13 @@ Keep track of:
 ### A. Update Environment Variables
 
 Go to Lambda Function → Configuration → Environment variables
+![Screenshot 2024-12-08 124845](https://github.com/user-attachments/assets/d89019d5-ae52-483c-8ab3-eaaae7259f3e)
 Click Edit
-Add Twilio credentials:
+Click "Add environment variable" for each of these:
 
-TWILIO_ACCOUNT_SID = [from boss]
-TWILIO_AUTH_TOKEN = [from boss]
-TWILIO_PHONE_NUMBER = [from boss]
+TWILIO_ACCOUNT_SID = [twilio number]
+TWILIO_AUTH_TOKEN = [twilio token]
+TWILIO_PHONE_NUMBER = [twilio phone number]
 AGENT_PHONE = [consultant's number]
 AGENT_EMAIL = [consultant's email]
 
