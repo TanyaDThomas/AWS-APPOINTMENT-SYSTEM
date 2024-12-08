@@ -388,13 +388,13 @@ Click Add
 ### D. Add Environment Variables (Placeholder)
 Go to Configuration → Environment variables
 Click Edit
-- Add variables (waiting on credentials):
+- Add variables :
 
--- TWILIO_ACCOUNT_SID
--- TWILIO_AUTH_TOKEN
--- TWILIO_PHONE_NUMBER
--- AGENT_PHONE
--- AGENT_EMAIL
+- TWILIO_ACCOUNT_SID
+- TWILIO_AUTH_TOKEN
+- TWILIO_PHONE_NUMBER
+- AGENT_PHONE
+- AGENT_EMAIL
 
 Click Save
 
